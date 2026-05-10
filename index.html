@@ -1,59 +1,159 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blind Touch Interface</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Blind Touch Dashboard</title>
+    <style>
+        /* CSS DASAR */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1a1a1a; /* Dark Mode mewah */
+            color: white;
+            padding-bottom: 50px;
+        }
 
-  <link rel="stylesheet" href="style.css">
+        /* HEADER */
+        header {
+            background: #2d2d2d;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #444;
+        }
+        .logo { font-weight: bold; color: #007AFF; font-size: 20px; }
+        .search-bar {
+            padding: 8px;
+            border-radius: 15px;
+            border: none;
+            background: #444;
+            color: white;
+            width: 150px;
+        }
+
+        /* HERO SECTION (Banner Utama) */
+        .hero {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            height: 150px;
+            background: linear-gradient(135deg, #007AFF, #00C6FF);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* GRID UTAMA (Tombol-tombol) */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 Kolom sejajar */
+            gap: 15px;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* STYLE TOMBOL (CARD) */
+        .card {
+            background: #2d2d2d;
+            border-radius: 20px;
+            padding: 25px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Warna Ikonik untuk masing-masing fitur */
+        .card.wa { border-bottom: 5px solid #25D366; }
+        .card.yt { border-bottom: 5px solid #FF0000; }
+        .card.sms { border-bottom: 5px solid #FF9800; }
+        .card.tel { border-bottom: 5px solid #2196F3; }
+
+        .icon { font-size: 40px; }
+        .label { font-weight: bold; font-size: 14px; letter-spacing: 1px; }
+
+        /* Efek Tekan (Interaktif) */
+        .card:active {
+            transform: scale(0.95);
+            background: #3d3d3d;
+        }
+
+        /* Tombol Lebar (CTA) */
+        .cta-btn {
+            grid-column: span 2; /* Menghabiskan 2 kolom */
+            background: #444;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-style: italic;
+            color: #bbb;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
+    <header>
+        <div class="logo">BLIND-T</div>
+        <input type="text" class="search-bar" placeholder="Cari...">
+    </header>
 
-    <h1>Blind Touch Interface</h1>
-
-    <!-- Area pesan -->
-    <div class="message-box" id="messageBox">
-      ...
+    <div class="hero">
+        <h2>Selamat Datang</h2>
+        <p>Gunakan suara & getaran</p>
     </div>
 
-    <!-- Keyboard tactile sederhana -->
-    <div class="keyboard">
+    <div class="main-grid">
+        <div class="card wa" onclick="jalankan('WhatsApp', 'whatsapp://send')">
+            <span class="icon">💬</span>
+            <span class="label">WHATSAPP</span>
+        </div>
 
-      <button class="key">A</button>
-      <button class="key">B</button>
-      <button class="key">C</button>
+        <div class="card yt" onclick="jalankan('YouTube', 'vnd.youtube://')">
+            <span class="icon">🎬</span>
+            <span class="label">YOUTUBE</span>
+        </div>
 
-      <button class="key">SPACE</button>
-      <button class="key">DELETE</button>
+        <div class="card sms" onclick="jalankan('SMS', 'sms:')">
+            <span class="icon">✉️</span>
+            <span class="label">SMS</span>
+        </div>
 
+        <div class="card tel" onclick="jalankan('Telepon', 'tel:0812345')">
+            <span class="icon">📞</span>
+            <span class="label">TELEPON</span>
+        </div>
+
+        <div class="cta-btn">Ketuk dua kali untuk bantuan</div>
     </div>
 
-    <!-- Tombol akses aplikasi -->
-    <div class="app-buttons">
+    <script>
+        function jalankan(nama, url) {
+            // 1. Getaran (Haptic Feedback)
+            if (navigator.vibrate) {
+                navigator.vibrate([60, 40, 60]); 
+            }
 
-      <button id="waBtn">
-        WHATSAPP
-      </button>
+            // 2. Suara (Text-to-Speech)
+            const pesan = new SpeechSynthesisUtterance("Membuka " + nama);
+            pesan.lang = "id-ID";
+            window.speechSynthesis.speak(pesan);
 
-      <button id="ytBtn">
-        YOUTUBE
-      </button>
-
-      <button id="smsBtn">
-        SMS
-      </button>
-
-      <button id="callBtn">
-        TELEPON
-      </button>
-
-    </div>
-
-  </div>
-
-  <script src="script.js"></script>
-
+            // 3. Eksekusi Buka Aplikasi (Delay agar suara terdengar dulu)
+            setTimeout(() => {
+                window.location.href = url;
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
