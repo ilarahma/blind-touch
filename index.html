@@ -3,230 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Blind-T: Smart Accessibility Dashboard</title>
+    <title>Manual Gesture AI - Blind-T</title>
     <style>
-        /* --- 1. CSS DASAR & LAYOUT (Struktur Wireframe) --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: #121212;
-            color: white;
-            padding-bottom: 40px;
-            overflow-x: hidden;
+        * { box-sizing: border-box; margin: 0; padding: 0; overflow: hidden; }
+        body { background-color: #000; color: #00ff00; font-family: sans-serif; height: 100vh; }
+        
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; touch-action: none; }
+
+        .ui-overlay {
+            position: relative; z-index: 0; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            pointer-events: none;
         }
 
-        header {
-            background: #1f1f1f;
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #333;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .logo { font-weight: bold; color: #007AFF; font-size: 20px; letter-spacing: 1px; }
-        .search-placeholder {
-            padding: 8px 15px;
-            background: #333;
-            border-radius: 20px;
-            font-size: 12px;
-            color: #888;
+        #status {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            font-size: 40px; font-weight: bold; text-align: center;
+            text-shadow: 0 0 20px #00ff00; color: #fff;
         }
 
-        /* --- 2. HERO SECTION --- */
-        .hero {
-            width: 92%;
-            max-width: 800px;
-            margin: 20px auto;
-            height: 120px;
-            background: linear-gradient(135deg, #0051af, #007AFF);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-            text-align: center;
-        }
-
-        /* --- 3. GRID TOMBOL UTAMA --- */
-        .main-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            width: 92%;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: #242424;
-            border-radius: 24px;
-            padding: 30px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Efek Neon & Warna Ikonik */
-        .card.wa { border-bottom: 6px solid #25D366; }
-        .card.yt { border-bottom: 6px solid #FF0000; }
-        .card.sms { border-bottom: 6px solid #FF9800; }
-        .card.tel { border-bottom: 6px solid #2196F3; }
-
-        .icon { font-size: 45px; }
-        .label { font-weight: bold; font-size: 14px; letter-spacing: 1px; color: #eee; }
-
-        /* Efek Interaktif (Visual Swipe/Touch) */
-        .card:active {
-            transform: scale(0.92);
-            background: #333;
-            filter: brightness(1.5);
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
-
-        /* --- 4. PANDUAN KAMUS GETARAN --- */
-        .guide-section {
-            width: 92%;
-            max-width: 800px;
-            margin: 30px auto;
-            background: #1f1f1f;
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px dashed #444;
-        }
-        .guide-title { color: #007AFF; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .guide-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #333;
-        }
-        .btn-test {
-            background: transparent;
-            color: #007AFF;
-            border: 1px solid #007AFF;
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .footer-note {
-            text-align: center;
-            font-size: 11px;
-            color: #666;
-            margin-top: 20px;
-            padding: 0 20px;
-        }
+        .hint { position: fixed; bottom: 10%; color: #444; font-size: 12px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">BLIND-T</div>
-        <div class="search-placeholder">🔍 Cari fitur...</div>
-    </header>
+    <canvas id="canvas"></canvas>
 
-    <div class="hero">
-        <h2 style="font-size: 18px;">Mode Aksesibilitas Aktif</h2>
-        <p style="font-size: 13px; opacity: 0.8;">Rasakan getaran untuk navigasi</p>
+    <div class="ui-overlay">
+        <div id="status">GAMBAR HURUF</div>
+        <div class="hint">W: Lebar | T: Tegak | S: Zigzag Horizontal | Y: Coret Atas</div>
     </div>
-
-    <div class="main-grid">
-        <div class="card wa" onclick="jalankan('WhatsApp', 'whatsapp://send')">
-            <span class="icon">💬</span>
-            <span class="label">WHATSAPP</span>
-        </div>
-
-        <div class="card yt" onclick="jalankan('YouTube', 'vnd.youtube://')">
-            <span class="icon">🎬</span>
-            <span class="label">YOUTUBE</span>
-        </div>
-
-        <div class="card sms" onclick="jalankan('SMS', 'sms:')">
-            <span class="icon">✉️</span>
-            <span class="label">SMS</span>
-        </div>
-
-        <div class="card tel" onclick="jalankan('Telepon', 'tel:08123456789')">
-            <span class="icon">📞</span>
-            <span class="label">TELEPON</span>
-        </div>
-    </div>
-
-    <div class="guide-section">
-        <h3 class="guide-title">📖 Kamus Getaran (Haptic)</h3>
-        <p style="font-size: 12px; color: #888; margin-bottom: 15px;">Pelajari pola getar di lingkungan berisik:</p>
-        
-        <div class="guide-item">
-            <span>WhatsApp (2x Pendek)</span>
-            <button class="btn-test" onclick="tesGetar('WhatsApp')">TES GETAR</button>
-        </div>
-        <div class="guide-item">
-            <span>YouTube (1x Panjang)</span>
-            <button class="btn-test" onclick="tesGetar('YouTube')">TES GETAR</button>
-        </div>
-        <div class="guide-item">
-            <span>SMS (Pola Urgent)</span>
-            <button class="btn-test" onclick="tesGetar('SMS')">TES GETAR</button>
-        </div>
-        <div class="guide-item">
-            <span>Telepon (Dering)</span>
-            <button class="btn-test" onclick="tesGetar('Telepon')">TES GETAR</button>
-        </div>
-    </div>
-
-    <p class="footer-note">Gunakan gesture 'Back' untuk kembali ke menu ini dari aplikasi luar.</p>
 
     <script>
-        // DATA: Kamus Pola Getaran (Haptic Patterns)
-        const kamusGetar = {
-            'WhatsApp': [100, 50, 100],
-            'YouTube': [600],
-            'SMS': [200, 100, 200, 100],
-            'Telepon': [500, 200, 500],
-            'Error': [1000]
-        };
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const statusText = document.getElementById('status');
+        
+        let points = [];
+        let isDrawing = false;
 
-        // FUNGSI UTAMA: Jalankan Aksi
-        function jalankan(nama, url) {
-            const pola = kamusGetar[nama] || [50];
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-            // 1. Getar
-            if (navigator.vibrate) {
-                navigator.vibrate(pola);
+        // --- LOGIKA PENGENALAN (THE BRAIN) ---
+        function recognizeGesture(pts) {
+            if (pts.length < 10) return null;
+
+            let minX = pts[0].x, maxX = pts[0].x;
+            let minY = pts[0].y, maxY = pts[0].y;
+
+            pts.forEach(p => {
+                if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+            });
+
+            const width = maxX - minX;
+            const height = maxY - minY;
+            const ratio = width / height;
+            
+            const start = pts[0];
+            const end = pts[pts.length - 1];
+            const distY = end.y - start.y;
+            const distX = end.x - start.x;
+
+            // 1. Logika Huruf 'T' (Telepon) -> Memanjang ke bawah, rasio sempit
+            if (ratio < 0.6 && distY > 100) {
+                return { app: "Telepon", url: "tel:0812345" };
             }
 
-            // 2. Suara Konfirmasi (Text-to-Speech)
-            const pesan = new SpeechSynthesisUtterance("Membuka " + nama);
-            pesan.lang = "id-ID";
-            pesan.rate = 1.0; 
-            window.speechSynthesis.speak(pesan);
-
-            // 3. Pindah Aplikasi (Delay 1.2 detik)
-            setTimeout(() => {
-                window.location.href = url;
-            }, 1200);
-        }
-
-        // FUNGSI PANDUAN: Tes Getaran saja
-        function tesGetar(nama) {
-            if (navigator.vibrate) {
-                navigator.vibrate(kamusGetar[nama]);
+            // 2. Logika Huruf 'W' (WhatsApp) -> Sangat lebar, rasio besar
+            if (ratio > 1.5) {
+                return { app: "WhatsApp", url: "whatsapp://send" };
             }
-            const pesan = new SpeechSynthesisUtterance("Ini pola getaran " + nama);
-            pesan.lang = "id-ID";
-            window.speechSynthesis.speak(pesan);
+
+            // 3. Logika Huruf 'Y' (YouTube) -> Coretan ke atas (negatif Y)
+            if (distY < -100) {
+                return { app: "YouTube", url: "vnd.youtube://" };
+            }
+
+            // 4. Logika Huruf 'S' (SMS) -> Gerakan horizontal bolak-balik
+            if (ratio > 0.8 && ratio < 1.4 && Math.abs(distX) > 100) {
+                return { app: "SMS", url: "sms:" };
+            }
+
+            return null;
         }
+
+        // --- ENGINE MENGGAMBAR ---
+        canvas.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            points = [];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const t = e.touches[0];
+            points.push({ x: t.clientX, y: t.clientY });
+            vibrate(40);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDrawing) return;
+            const t = e.touches[0];
+            const p = { x: t.clientX, y: t.clientY };
+            
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 12;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(points[points.length-1].x, points[points.length-1].y);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+            
+            points.push(p);
+        });
+
+        canvas.addEventListener('touchend', () => {
+            isDrawing = false;
+            const result = recognizeGesture(points);
+            
+            if (result) {
+                statusText.innerText = result.app;
+                vibrate([100, 50, 100]);
+                speak("Membuka " + result.app);
+                setTimeout(() => window.location.href = result.url, 1500);
+            } else {
+                statusText.innerText = "COBA LAGI";
+                vibrate(400);
+                speak("Maaf, tidak terbaca");
+                setTimeout(() => { ctx.clearRect(0, 0, canvas.width, canvas.height); statusText.innerText = "GAMBAR HURUF"; }, 1000);
+            }
+        });
+
+        function speak(text) {
+            window.speechSynthesis.cancel(); // Hentikan suara sebelumnya
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'id-ID';
+            window.speechSynthesis.speak(msg);
+        }
+
+        function vibrate(p) { if(navigator.vibrate) navigator.vibrate(p); }
     </script>
 </body>
 </html>
