@@ -3,101 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Blind Touch Dashboard</title>
+    <title>Blind-T: Smart Accessibility Dashboard</title>
     <style>
-        /* CSS DASAR */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* --- 1. CSS DASAR & LAYOUT (Struktur Wireframe) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #1a1a1a; /* Dark Mode mewah */
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #121212;
             color: white;
-            padding-bottom: 50px;
+            padding-bottom: 40px;
+            overflow-x: hidden;
         }
 
-        /* HEADER */
         header {
-            background: #2d2d2d;
+            background: #1f1f1f;
             padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #444;
+            border-bottom: 2px solid #333;
+            position: sticky; top: 0; z-index: 100;
         }
-        .logo { font-weight: bold; color: #007AFF; font-size: 20px; }
-        .search-bar {
-            padding: 8px;
-            border-radius: 15px;
-            border: none;
-            background: #444;
-            color: white;
-            width: 150px;
+        .logo { font-weight: bold; color: #007AFF; font-size: 20px; letter-spacing: 1px; }
+        .search-placeholder {
+            padding: 8px 15px;
+            background: #333;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #888;
         }
 
-        /* HERO SECTION (Banner Utama) */
+        /* --- 2. HERO SECTION --- */
         .hero {
-            width: 90%;
+            width: 92%;
             max-width: 800px;
             margin: 20px auto;
-            height: 150px;
-            background: linear-gradient(135deg, #007AFF, #00C6FF);
+            height: 120px;
+            background: linear-gradient(135deg, #0051af, #007AFF);
             border-radius: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
-        /* GRID UTAMA (Tombol-tombol) */
+        /* --- 3. GRID TOMBOL UTAMA --- */
         .main-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 Kolom sejajar */
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            width: 90%;
+            width: 92%;
             max-width: 800px;
             margin: 0 auto;
         }
 
-        /* STYLE TOMBOL (CARD) */
         .card {
-            background: #2d2d2d;
-            border-radius: 20px;
-            padding: 25px 10px;
+            background: #242424;
+            border-radius: 24px;
+            padding: 30px 10px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid #444;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #333;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Warna Ikonik untuk masing-masing fitur */
-        .card.wa { border-bottom: 5px solid #25D366; }
-        .card.yt { border-bottom: 5px solid #FF0000; }
-        .card.sms { border-bottom: 5px solid #FF9800; }
-        .card.tel { border-bottom: 5px solid #2196F3; }
+        /* Efek Neon & Warna Ikonik */
+        .card.wa { border-bottom: 6px solid #25D366; }
+        .card.yt { border-bottom: 6px solid #FF0000; }
+        .card.sms { border-bottom: 6px solid #FF9800; }
+        .card.tel { border-bottom: 6px solid #2196F3; }
 
-        .icon { font-size: 40px; }
-        .label { font-weight: bold; font-size: 14px; letter-spacing: 1px; }
+        .icon { font-size: 45px; }
+        .label { font-weight: bold; font-size: 14px; letter-spacing: 1px; color: #eee; }
 
-        /* Efek Tekan (Interaktif) */
+        /* Efek Interaktif (Visual Swipe/Touch) */
         .card:active {
-            transform: scale(0.95);
-            background: #3d3d3d;
+            transform: scale(0.92);
+            background: #333;
+            filter: brightness(1.5);
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
         }
 
-        /* Tombol Lebar (CTA) */
-        .cta-btn {
-            grid-column: span 2; /* Menghabiskan 2 kolom */
-            background: #444;
-            padding: 15px;
-            border-radius: 15px;
+        /* --- 4. PANDUAN KAMUS GETARAN --- */
+        .guide-section {
+            width: 92%;
+            max-width: 800px;
+            margin: 30px auto;
+            background: #1f1f1f;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px dashed #444;
+        }
+        .guide-title { color: #007AFF; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .guide-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+        }
+        .btn-test {
+            background: transparent;
+            color: #007AFF;
+            border: 1px solid #007AFF;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .footer-note {
             text-align: center;
-            font-style: italic;
-            color: #bbb;
+            font-size: 11px;
+            color: #666;
+            margin-top: 20px;
+            padding: 0 20px;
         }
     </style>
 </head>
@@ -105,12 +133,12 @@
 
     <header>
         <div class="logo">BLIND-T</div>
-        <input type="text" class="search-bar" placeholder="Cari...">
+        <div class="search-placeholder">🔍 Cari fitur...</div>
     </header>
 
     <div class="hero">
-        <h2>Selamat Datang</h2>
-        <p>Gunakan suara & getaran</p>
+        <h2 style="font-size: 18px;">Mode Aksesibilitas Aktif</h2>
+        <p style="font-size: 13px; opacity: 0.8;">Rasakan getaran untuk navigasi</p>
     </div>
 
     <div class="main-grid">
@@ -129,30 +157,75 @@
             <span class="label">SMS</span>
         </div>
 
-        <div class="card tel" onclick="jalankan('Telepon', 'tel:0812345')">
+        <div class="card tel" onclick="jalankan('Telepon', 'tel:08123456789')">
             <span class="icon">📞</span>
             <span class="label">TELEPON</span>
         </div>
-
-        <div class="cta-btn">Ketuk dua kali untuk bantuan</div>
     </div>
 
+    <div class="guide-section">
+        <h3 class="guide-title">📖 Kamus Getaran (Haptic)</h3>
+        <p style="font-size: 12px; color: #888; margin-bottom: 15px;">Pelajari pola getar di lingkungan berisik:</p>
+        
+        <div class="guide-item">
+            <span>WhatsApp (2x Pendek)</span>
+            <button class="btn-test" onclick="tesGetar('WhatsApp')">TES GETAR</button>
+        </div>
+        <div class="guide-item">
+            <span>YouTube (1x Panjang)</span>
+            <button class="btn-test" onclick="tesGetar('YouTube')">TES GETAR</button>
+        </div>
+        <div class="guide-item">
+            <span>SMS (Pola Urgent)</span>
+            <button class="btn-test" onclick="tesGetar('SMS')">TES GETAR</button>
+        </div>
+        <div class="guide-item">
+            <span>Telepon (Dering)</span>
+            <button class="btn-test" onclick="tesGetar('Telepon')">TES GETAR</button>
+        </div>
+    </div>
+
+    <p class="footer-note">Gunakan gesture 'Back' untuk kembali ke menu ini dari aplikasi luar.</p>
+
     <script>
+        // DATA: Kamus Pola Getaran (Haptic Patterns)
+        const kamusGetar = {
+            'WhatsApp': [100, 50, 100],
+            'YouTube': [600],
+            'SMS': [200, 100, 200, 100],
+            'Telepon': [500, 200, 500],
+            'Error': [1000]
+        };
+
+        // FUNGSI UTAMA: Jalankan Aksi
         function jalankan(nama, url) {
-            // 1. Getaran (Haptic Feedback)
+            const pola = kamusGetar[nama] || [50];
+
+            // 1. Getar
             if (navigator.vibrate) {
-                navigator.vibrate([60, 40, 60]); 
+                navigator.vibrate(pola);
             }
 
-            // 2. Suara (Text-to-Speech)
+            // 2. Suara Konfirmasi (Text-to-Speech)
             const pesan = new SpeechSynthesisUtterance("Membuka " + nama);
             pesan.lang = "id-ID";
+            pesan.rate = 1.0; 
             window.speechSynthesis.speak(pesan);
 
-            // 3. Eksekusi Buka Aplikasi (Delay agar suara terdengar dulu)
+            // 3. Pindah Aplikasi (Delay 1.2 detik)
             setTimeout(() => {
                 window.location.href = url;
-            }, 1000);
+            }, 1200);
+        }
+
+        // FUNGSI PANDUAN: Tes Getaran saja
+        function tesGetar(nama) {
+            if (navigator.vibrate) {
+                navigator.vibrate(kamusGetar[nama]);
+            }
+            const pesan = new SpeechSynthesisUtterance("Ini pola getaran " + nama);
+            pesan.lang = "id-ID";
+            window.speechSynthesis.speak(pesan);
         }
     </script>
 </body>
